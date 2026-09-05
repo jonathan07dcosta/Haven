@@ -250,8 +250,8 @@
           <div class="quiz-progress" id="quizProgress"></div>
 
           <div class="quiz-step active" data-q="0">
-            <label>Which of these feels closest to what you've been experiencing?</label>
-            <div class="quiz-options" data-group="0">
+            <label>Which of these feel closest to what you've been experiencing? (pick as many as apply)</label>
+            <div class="quiz-options" data-group="0" data-multi="true">
               <button class="quiz-opt" data-val="anxiety">A racing mind, dread, or feeling constantly on edge</button>
               <button class="quiz-opt" data-val="depression">Low energy, numbness, or losing interest in things</button>
               <button class="quiz-opt" data-val="stress">Overwhelmed, stretched thin, can't switch off</button>
@@ -265,6 +265,9 @@
               <button class="quiz-opt" data-val="loneliness">Feeling disconnected, even around others</button>
               <button class="quiz-opt" data-val="focus">Can't focus, can't start, everything feels stuck</button>
               <button class="quiz-opt" data-val="medschool">Exam pressure, imposter syndrome, or clinical weight</button>
+            </div>
+            <div style="text-align:right; margin-top:14px;">
+              <button class="primary" id="quizStep0Continue" onclick="advanceQuiz()" disabled>Continue</button>
             </div>
           </div>
 
@@ -964,7 +967,7 @@ function goTo(page){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-const quizAnswers = {};
+const quizAnswers = { '0': [] };
 let quizStep = 0;
 const quizTotal = 3;
 
@@ -975,12 +978,26 @@ function initQuizProgress(){
 initQuizProgress();
 
 document.querySelectorAll('.quiz-opt').forEach(function(btn){
+  const optionsEl = btn.parentElement;
+  const isMulti = optionsEl.dataset.multi === 'true';
+
   btn.addEventListener('click', function(){
-    const group = this.parentElement.dataset.group;
-    document.querySelectorAll('.quiz-options[data-group="' + group + '"] .quiz-opt').forEach(function(b){ b.classList.remove('selected'); });
-    this.classList.add('selected');
-    quizAnswers[group] = this.dataset.val;
-    setTimeout(function(){ advanceQuiz(); }, 300);
+    const group = optionsEl.dataset.group;
+
+    if(isMulti){
+      this.classList.toggle('selected');
+      const val = this.dataset.val;
+      const arr = quizAnswers[group];
+      const idx = arr.indexOf(val);
+      if(idx === -1) arr.push(val); else arr.splice(idx, 1);
+      const continueBtn = document.getElementById('quizStep0Continue');
+      if(continueBtn) continueBtn.disabled = arr.length === 0;
+    } else {
+      document.querySelectorAll('.quiz-options[data-group="' + group + '"] .quiz-opt').forEach(function(b){ b.classList.remove('selected'); });
+      this.classList.add('selected');
+      quizAnswers[group] = this.dataset.val;
+      setTimeout(function(){ advanceQuiz(); }, 300);
+    }
   });
 });
 
@@ -1009,38 +1026,50 @@ function showQuizResult(){
   const resultBox = document.getElementById('quizResult');
   resultBox.classList.add('active');
 
-  const topicKey = quizAnswers['0'];
-  const t = topics[topicKey];
+  const topicKeys = quizAnswers['0'];
   const duration = quizAnswers['1'];
   const need = quizAnswers['2'];
+  const topicTitles = topicKeys.map(function(k){ return topics[k].title.toLowerCase(); });
 
-  document.getElementById('resultHeadline').textContent = 'This sounds like it might be about ' + t.title.toLowerCase();
+  let headline;
+  if(topicTitles.length === 1){
+    headline = 'This sounds like it might be about ' + topicTitles[0];
+  } else if(topicTitles.length === 2){
+    headline = 'This sounds like a mix of ' + topicTitles[0] + ' and ' + topicTitles[1];
+  } else {
+    const last = topicTitles[topicTitles.length - 1];
+    headline = 'This sounds like a mix of ' + topicTitles.slice(0, -1).join(', ') + ', and ' + last;
+  }
+  document.getElementById('resultHeadline').textContent = headline;
 
   let subtext = '';
-  if(duration === 'today') subtext = "Since this is pretty recent, a quick coping tool might help most right now — but the background info is here too.";
-  else if(duration === 'weeks') subtext = "A few weeks in is a good time to understand what's going on and try a couple of concrete things.";
-  else subtext = "Since this has been going on a while, it's worth reading up and seriously considering outside support alongside anything you try here.";
+  if(topicTitles.length > 1){
+    subtext = "It's common for a few things to show up together and feed into each other. ";
+  }
+  if(duration === 'today') subtext += "Since this is pretty recent, a quick coping tool might help most right now — but the background info is here too.";
+  else if(duration === 'weeks') subtext += "A few weeks in is a good time to understand what's going on and try a couple of concrete things.";
+  else subtext += "Since this has been going on a while, it's worth reading up and seriously considering outside support alongside anything you try here.";
   document.getElementById('resultSub').textContent = subtext;
 
   let items = [];
+
+  // One "read about" entry per selected topic
+  topicKeys.forEach(function(key){
+    items.push({
+      label: 'Read about ' + topics[key].title.toLowerCase(),
+      action: function(){ openTopic(key); }
+    });
+  });
+
+  // General tool suggestion(s) based on what's needed right now
   if(need === 'calm'){
-    items = [
-      {label:'Try the breathing or grounding tool', action:function(){ goTo('tools'); }},
-      {label:'Read about ' + t.title.toLowerCase(), action:function(){ openTopic(topicKey); }}
-    ];
-  } else if(need === 'understand'){
-    items = [
-      {label:'Read about ' + t.title.toLowerCase(), action:function(){ openTopic(topicKey); }},
-      {label:'Try a grounding or breathing tool', action:function(){ goTo('tools'); }}
-    ];
-  } else {
-    items = [
-      {label:'See what can help with ' + t.title.toLowerCase(), action:function(){ openTopic(topicKey); }},
-      {label:'Try the thought reframe tool', action:function(){ goTo('tools'); }}
-    ];
+    items.unshift({label:'Try the breathing or grounding tool', action:function(){ goTo('tools'); }});
+  } else if(need === 'plan'){
+    items.push({label:'Try the thought reframe tool', action:function(){ goTo('tools'); }});
   }
+
   if(duration === 'months'){
-    items.push({label:'See who to talk to if this continues', action:function(){ openTopic(topicKey); }});
+    items.push({label:'See who to talk to if this continues', action:function(){ openTopic(topicKeys[0]); }});
   }
 
   document.getElementById('resultItems').innerHTML = items.map(function(it,i){
@@ -1053,7 +1082,9 @@ function showQuizResult(){
 }
 
 function restartQuiz(){
-  quizAnswers['0'] = undefined; quizAnswers['1'] = undefined; quizAnswers['2'] = undefined;
+  quizAnswers['0'] = []; quizAnswers['1'] = undefined; quizAnswers['2'] = undefined;
+  const continueBtn = document.getElementById('quizStep0Continue');
+  if(continueBtn) continueBtn.disabled = true;
   document.querySelectorAll('.quiz-opt').forEach(function(b){ b.classList.remove('selected'); });
   document.querySelectorAll('.quiz-step').forEach(function(s){ s.classList.remove('active'); });
   document.querySelector('.quiz-step[data-q="0"]').classList.add('active');
