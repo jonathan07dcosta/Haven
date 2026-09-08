@@ -12,7 +12,1421 @@
     --moss-dark: #33473D;
     --clay: #C0674A;
     --sand: #E4DCC8;
+    --line: rgba(34,51,48,0.14);<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haven — support that fits what you're going through</title>
+<style>
+  :root{
+    --ink: #223330;
+    --paper: #F3F0E7;
+    --moss: #4C6B5D;
+    --moss-dark: #33473D;
+    --clay: #C0674A;
+    --sand: #E4DCC8;
     --line: rgba(34,51,48,0.14);
+    --white: #FCFBF7;
+    --font-display: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{max-width:820px; margin:0 auto; padding:0 24px 100px;}
+  a{color:inherit;}
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(243,240,231,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:820px; margin:0 auto; padding:16px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:10px;
+  }
+  .logo{
+    font-family:var(--font-display); font-size:20px; color:var(--moss-dark);
+    cursor:pointer; display:flex; align-items:center; gap:8px;
+  }
+  .logo::before{content:'○'; color:var(--clay); font-size:14px;}
+  .topnav{display:flex; gap:6px; flex-wrap:wrap;}
+  .topnav button{
+    font-family:var(--font-body); font-size:13.5px; background:transparent;
+    border:1px solid transparent; color:var(--moss-dark); padding:7px 14px;
+    border-radius:100px; cursor:pointer; transition:all 0.15s ease;
+  }
+  .topnav button:hover{background:var(--white); border-color:var(--line);}
+  .topnav button.active{background:var(--moss-dark); color:var(--white);}
+
+  .page{display:none; animation:fadeIn 0.35s ease;}
+  .page.active{display:block;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+  header.hero{padding:52px 0 36px;}
+  .eyebrow{font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--moss); font-weight:600; margin-bottom:14px;}
+  h1{font-family:var(--font-display); font-weight:normal; font-size:clamp(32px,6.5vw,50px); color:var(--moss-dark); line-height:1.08; letter-spacing:-0.01em;}
+  header.hero p{max-width:520px; margin-top:16px; font-size:16.5px; color:#4a5a54;}
+  .hero-actions{display:flex; gap:10px; margin-top:26px; flex-wrap:wrap;}
+
+  button.primary{
+    font-family:var(--font-body); font-size:14.5px; font-weight:600;
+    background:var(--moss-dark); color:var(--white); border:none;
+    padding:12px 26px; border-radius:100px; cursor:pointer;
+    transition:background 0.2s ease, transform 0.1s ease;
+  }
+  button.primary:hover{background:var(--moss);}
+  button.primary:active{transform:scale(0.97);}
+  button.ghost{
+    font-family:var(--font-body); font-size:13.5px; background:transparent;
+    color:var(--moss-dark); border:1px solid var(--line); padding:10px 22px;
+    border-radius:100px; cursor:pointer;
+  }
+  button.ghost:hover{border-color:var(--moss-dark);}
+
+  section{margin-bottom:56px; scroll-margin-top:90px;}
+  .section-label{font-family:var(--font-display); font-style:italic; font-size:14px; color:var(--clay); margin-bottom:8px;}
+  h2{font-family:var(--font-display); font-weight:normal; font-size:26px; color:var(--moss-dark); margin-bottom:16px;}
+  h3{font-family:var(--font-display); font-weight:normal; font-size:19px; color:var(--moss-dark); margin-bottom:8px;}
+
+  .card{background:var(--white); border:1px solid var(--line); border-radius:18px; padding:26px;}
+
+  .topic-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media(max-width:560px){.topic-grid{grid-template-columns:1fr;}}
+  .topic-tile{
+    background:var(--white); border:1px solid var(--line); border-radius:16px;
+    padding:20px; cursor:pointer; transition:all 0.15s ease; text-align:left;
+  }
+  .topic-tile:hover{border-color:var(--moss); transform:translateY(-1px);}
+  .topic-tile .tag{font-size:11.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--clay); font-weight:600;}
+  .topic-tile h3{margin-top:6px; margin-bottom:5px;}
+  .topic-tile p{font-size:13.5px; color:#5a6b64;}
+
+  .quiz-card{background:var(--white); border:1px solid var(--line); border-radius:20px; padding:32px 28px;}
+  .quiz-step{display:none;}
+  .quiz-step.active{display:block; animation:fadeIn 0.35s ease;}
+  .quiz-step label{display:block; font-family:var(--font-display); font-style:italic; color:var(--clay); font-size:15px; margin-bottom:16px;}
+  .quiz-options{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; background:var(--paper); border:1px solid var(--line); border-radius:12px;
+    padding:13px 16px; font-family:var(--font-body); font-size:14.5px; color:var(--ink);
+    cursor:pointer; transition:all 0.15s ease;
+  }
+  .quiz-opt:hover{border-color:var(--moss);}
+  .quiz-opt.selected{background:var(--moss-dark); color:var(--white); border-color:var(--moss-dark);}
+  .quiz-progress{display:flex; gap:6px; margin-bottom:22px;}
+  .quiz-progress .bar{height:4px; flex:1; background:var(--line); border-radius:4px; overflow:hidden;}
+  .quiz-progress .bar span{display:block; height:100%; background:var(--moss); width:0%; transition:width 0.3s ease;}
+
+  .quiz-result{display:none;}
+  .quiz-result.active{display:block; animation:fadeIn 0.4s ease;}
+  .result-item{
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--sand); border-radius:14px; padding:16px 18px; margin-bottom:10px; cursor:pointer;
+  }
+  .result-item:hover{background:#dcd2b8;}
+  .result-item span.arrow{color:var(--moss-dark); font-size:18px;}
+
+  .breathe-stage{position:relative; width:200px; height:200px; margin:0 auto 24px; display:flex; align-items:center; justify-content:center;}
+  .breathe-ring{position:absolute; inset:0; border-radius:50%; border:1px solid var(--line);}
+  .breathe-circle{width:84px; height:84px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #6C8B7C, var(--moss-dark)); transition:transform 4s ease-in-out; box-shadow:0 8px 30px rgba(76,107,93,0.35);}
+  .breathe-word{font-family:var(--font-display); font-size:18px; color:var(--moss-dark); min-height:26px; margin-bottom:6px; text-align:center;}
+  .breathe-sub{font-size:13px; color:#7a8a83; margin-bottom:18px; text-align:center;}
+
+  .reframe-step-inner{display:none;}
+  .reframe-step-inner.active{display:block; animation:fadeIn 0.35s ease;}
+  .reframe-step-inner label{display:block; font-family:var(--font-display); font-style:italic; color:var(--clay); font-size:14.5px; margin-bottom:10px;}
+  .reframe-step-inner textarea{
+    width:100%; min-height:80px; background:var(--paper); border:1px solid var(--line);
+    border-radius:12px; padding:14px; font-family:var(--font-body); font-size:15px; color:var(--ink); resize:vertical;
+  }
+  .reframe-step-inner textarea:focus{outline:2px solid var(--moss); outline-offset:1px;}
+  .reframe-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+  .reframe-dots{display:flex; gap:6px;}
+  .dot{width:6px; height:6px; border-radius:50%; background:var(--line);}
+  .dot.done{background:var(--moss);}
+  .reframe-summary{background:var(--sand); border-radius:14px; padding:18px; font-size:14.5px; line-height:1.7;}
+  .reframe-summary strong{color:var(--moss-dark); display:block; font-size:12px; text-transform:uppercase; letter-spacing:0.07em; margin:12px 0 3px;}
+  .reframe-summary strong:first-child{margin-top:0;}
+
+  .tool-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px;}
+  @media(max-width:640px){.tool-grid{grid-template-columns:1fr;}}
+
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px; font-size:13.5px; color:var(--moss-dark);
+    background:none; border:none; cursor:pointer; margin-bottom:20px; font-family:var(--font-body); padding:0;
+  }
+  .back-link:hover{text-decoration:underline;}
+  .pill-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;}
+  .pill{font-size:12.5px; background:var(--sand); color:var(--moss-dark); padding:5px 13px; border-radius:100px;}
+  .detail-block{margin-bottom:28px;}
+  .detail-block ul{padding-left:20px; margin-top:8px;}
+  .detail-block li{margin-bottom:8px; font-size:15px; color:#3d4e48;}
+  .detail-block p{font-size:15px; color:#3d4e48;}
+  .help-box{
+    background:var(--white); border:1px solid var(--line); border-left:3px solid var(--moss);
+    border-radius:0 14px 14px 0; padding:16px 20px; margin-bottom:12px;
+  }
+  .help-box h4{font-family:var(--font-display); font-weight:normal; font-size:15.5px; color:var(--moss-dark); margin-bottom:4px;}
+  .help-box p{font-size:14px; color:#4a5a54;}
+
+  .crisis-card{background:var(--moss-dark); color:var(--white); border-radius:20px; padding:32px 28px;}
+  .crisis-card h2{color:var(--white);}
+  .crisis-card .section-label{color:#E4B49A;}
+  .resource-row{display:flex; justify-content:space-between; align-items:baseline; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.14); gap:16px; flex-wrap:wrap;}
+  .resource-row:last-child{border-bottom:none;}
+  .resource-name{font-size:15px;}
+  .resource-name span{display:block; font-size:12.5px; color:#B9C8C0; margin-top:2px;}
+  .resource-contact{font-family:var(--font-display); font-size:17px; color:#F0DCC8; white-space:nowrap;}
+  .crisis-note{font-size:13.5px; color:#B9C8C0; margin-top:18px; line-height:1.6;}
+
+  footer{text-align:center; font-size:13px; color:#8a9791; margin-top:50px;}  #page-tools h3{font-size:22px;}
+  #page-tools p{font-size:16.5px;}
+  #page-tools .breathe-word{font-size:21px;}
+  #page-tools .breathe-sub{font-size:15.5px;}
+  #page-tools .reframe-step-inner label{font-size:17px;}
+  #page-tools .reframe-step-inner textarea{font-size:17px; min-height:96px;}
+  #page-tools .reframe-summary{font-size:16px;}
+  #page-tools .tool-grid > .card div{font-size:16.5px;}
+
+  .journal-card{background:var(--white); border:1px solid var(--line); border-radius:18px; padding:26px; margin-bottom:18px;}
+  .journal-card textarea{
+    width:100%; min-height:120px; background:var(--paper); border:1px solid var(--line);
+    border-radius:12px; padding:14px; font-family:var(--font-body); font-size:16px; color:var(--ink); resize:vertical;
+  }
+  .journal-card textarea:focus{outline:2px solid var(--moss); outline-offset:1px;}
+  .journal-entry{
+    background:var(--white); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:12px;
+  }
+  .journal-entry-date{font-family:var(--font-display); font-style:italic; color:var(--clay); font-size:13px; margin-bottom:6px;}
+  .journal-entry-text{font-size:15px; color:var(--ink); white-space:pre-wrap; line-height:1.6;}
+  .journal-entry-delete{
+    background:none; border:none; color:#9aa8a1; font-size:12.5px; cursor:pointer; margin-top:8px; padding:0;
+  }
+  .journal-entry-delete:hover{color:var(--clay);}
+  .journal-empty{font-size:14.5px; color:#8a9791; text-align:center; padding:20px 0;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo" onclick="goTo('home')">Haven</div>
+    <div class="topnav">
+      <button data-page="home" onclick="goTo('home')" class="active">Home</button>
+      <button data-page="quiz" onclick="goTo('quiz')">Find what helps</button>
+      <button data-page="library" onclick="goTo('library')">Learn</button>
+      <button data-page="tools" onclick="goTo('tools')">Tools</button>
+      <button data-page="journal" onclick="goTo('journal')">Journal</button>
+      <button data-page="crisis" onclick="goTo('crisis')">Talk now</button>
+      <button data-page="chat" onclick="goTo('chat')">Chat</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="page active" id="page-home">
+    <header class="hero">
+      <div class="eyebrow">Haven</div>
+      <h1>Support that fits what<br>you're actually going through.</h1>
+      <p>Answer a couple of questions and Haven points you to the right information and tools — or jump straight to a topic below.</p>
+      <div class="hero-actions">
+        <button class="primary" onclick="goTo('quiz')">Find what helps me</button>
+        <button class="ghost" onclick="goTo('crisis')">I need to talk to someone now</button>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-label">Browse</div>
+      <h2>Or go straight to a topic</h2>
+      <div class="topic-grid" id="homeTopicGrid"></div>
+    </section>
+  </div>
+
+  <div class="page" id="page-quiz">
+    <section style="margin-top:44px;">
+      <div class="section-label">A few questions</div>
+      <h2>What's going on for you?</h2>
+      <div class="quiz-card">
+
+        <div id="quizSteps">
+          <div class="quiz-progress" id="quizProgress"></div>
+
+          <div class="quiz-step active" data-q="0">
+            <label>Which of these feel closest to what you've been experiencing? (pick as many as apply)</label>
+            <div class="quiz-options" data-group="0" data-multi="true">
+              <button class="quiz-opt" data-val="anxiety">A racing mind, dread, or feeling constantly on edge</button>
+              <button class="quiz-opt" data-val="depression">Low energy, numbness, or losing interest in things</button>
+              <button class="quiz-opt" data-val="stress">Overwhelmed, stretched thin, can't switch off</button>
+              <button class="quiz-opt" data-val="sleep">Trouble sleeping or a tired mind that won't rest</button>
+              <button class="quiz-opt" data-val="grief">Loss, grief, or a big change I'm adjusting to</button>
+              <button class="quiz-opt" data-val="relationships">Conflict or disconnect in a relationship</button>
+              <button class="quiz-opt" data-val="anger">Snapping easily or simmering frustration</button>
+              <button class="quiz-opt" data-val="panic">Sudden waves of fear or racing heart</button>
+              <button class="quiz-opt" data-val="selfesteem">A harsh inner voice, feeling not good enough</button>
+              <button class="quiz-opt" data-val="social">Dread or self-consciousness around people</button>
+              <button class="quiz-opt" data-val="loneliness">Feeling disconnected, even around others</button>
+              <button class="quiz-opt" data-val="focus">Can't focus, can't start, everything feels stuck</button>
+              <button class="quiz-opt" data-val="medschool">Exam pressure, imposter syndrome, or clinical weight</button>
+            </div>
+            <div style="text-align:right; margin-top:14px;">
+              <button class="primary" id="quizStep0Continue" onclick="advanceQuiz()" disabled>Continue</button>
+            </div>
+          </div>
+
+          <div class="quiz-step" data-q="1">
+            <label>How long has this been going on?</label>
+            <div class="quiz-options" data-group="1">
+              <button class="quiz-opt" data-val="today">Just today, or the last few days</button>
+              <button class="quiz-opt" data-val="weeks">A few weeks</button>
+              <button class="quiz-opt" data-val="months">Months or longer</button>
+            </div>
+          </div>
+
+          <div class="quiz-step" data-q="2">
+            <label>Right now, what would help most?</label>
+            <div class="quiz-options" data-group="2">
+              <button class="quiz-opt" data-val="calm">Something to calm down with in the moment</button>
+              <button class="quiz-opt" data-val="understand">Understanding why I feel this way</button>
+              <button class="quiz-opt" data-val="plan">Ideas for what to actually do about it</button>
+              <button class="quiz-opt" data-val="unsafe">Things feel like too much, or unsafe, right now</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz-result" id="quizResult">
+          <h3 id="resultHeadline">Here's what might help</h3>
+          <p style="font-size:14px; color:#5a6b64; margin-bottom:18px;" id="resultSub"></p>
+          <div id="resultSolution"></div>
+          <div id="resultItems"></div>
+          <button class="ghost" style="margin-top:14px;" onclick="restartQuiz()">Start over</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="page" id="page-library">
+    <section style="margin-top:44px;">
+      <div class="section-label">Learn</div>
+      <h2>Topics</h2>
+      <div class="topic-grid" id="libraryTopicGrid"></div>
+    </section>
+  </div>
+
+  <div class="page" id="page-detail">
+    <section style="margin-top:44px;">
+      <button class="back-link" onclick="goTo('library')">← Back to topics</button>
+      <div class="section-label" id="detailTag">Topic</div>
+      <h2 id="detailTitle">—</h2>
+      <div class="pill-row" id="detailPills"></div>
+
+      <div class="detail-block">
+        <h3>What it can feel like</h3>
+        <p id="detailFeels"></p>
+      </div>
+
+      <div class="detail-block">
+        <h3>Common causes or triggers</h3>
+        <ul id="detailCauses"></ul>
+      </div>
+
+      <div class="detail-block">
+        <h3>What can help</h3>
+        <div id="detailHelp"></div>
+      </div>
+
+      <div class="detail-block">
+        <h3>When to get more support</h3>
+        <p id="detailWhen"></p>
+      </div>
+
+      <div class="detail-block">
+        <h3>Try this now</h3>
+        <div class="card" id="detailTool"></div>
+      </div>
+
+      <button class="primary" onclick="goToReframeWithStarter()">Reframe this thought</button>
+    </section>
+  </div>
+
+  <div class="page" id="page-tools">
+    <section style="margin-top:44px;">
+      <div class="section-label">Tools</div>
+      <h2>Something to do right now</h2>
+      <div class="tool-grid">
+
+        <div class="card">
+          <h3>Breathe with the circle</h3>
+          <div class="breathe-stage">
+            <div class="breathe-ring"></div>
+            <div class="breathe-circle" id="breatheCircle"></div>
+          </div>
+          <div class="breathe-word" id="breatheWord">Ready when you are</div>
+          <div class="breathe-sub" id="breatheSub">4 in · 4 hold · 6 out</div>
+          <div style="text-align:center;">
+            <button class="primary" id="breatheBtn" onclick="toggleBreathing()">Begin</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Ground yourself</h3>
+          <p style="font-size:14px; color:#5a6b64; margin-bottom:14px;">Notice, one at a time:</p>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div><strong style="color:var(--clay); font-family:var(--font-display); font-style:italic;">5</strong> things you can see</div>
+            <div><strong style="color:var(--clay); font-family:var(--font-display); font-style:italic;">4</strong> things you can touch</div>
+            <div><strong style="color:var(--clay); font-family:var(--font-display); font-style:italic;">3</strong> things you can hear</div>
+            <div><strong style="color:var(--clay); font-family:var(--font-display); font-style:italic;">2</strong> things you can smell</div>
+            <div><strong style="color:var(--clay); font-family:var(--font-display); font-style:italic;">1</strong> thing you can taste, or are grateful for</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <h3>Reframe a hard thought</h3>
+        <div class="reframe-step-inner active" data-step="1">
+          <label>What's the thought that's stuck?</label>
+          <textarea id="r1" placeholder="e.g. &quot;I'm going to fail no matter what I do.&quot;"></textarea>
+        </div>
+        <div class="reframe-step-inner" data-step="2">
+          <label>What's the evidence — for and against it?</label>
+          <textarea id="r2" placeholder="e.g. &quot;I've struggled before, but I also passed things I was sure I'd fail.&quot;"></textarea>
+        </div>
+        <div class="reframe-step-inner" data-step="3">
+          <label>If a friend had this thought, what would you tell them?</label>
+          <textarea id="r3" placeholder="Write it like you'd say it out loud to them."></textarea>
+        </div>
+        <div class="reframe-step-inner" data-step="4">
+          <label>A more balanced way to put it</label>
+          <textarea id="r4" placeholder="Try rewriting the original thought with a bit more room in it."></textarea>
+        </div>
+        <div class="reframe-step-inner" data-step="5">
+          <div class="reframe-summary" id="reframeSummary"></div>
+        </div>
+        <div class="reframe-nav">
+          <div class="reframe-dots">
+            <div class="dot" data-dot="1"></div>
+            <div class="dot" data-dot="2"></div>
+            <div class="dot" data-dot="3"></div>
+            <div class="dot" data-dot="4"></div>
+            <div class="dot" data-dot="5"></div>
+          </div>
+          <div>
+            <button class="ghost" id="backBtn" onclick="reframeBack()" style="display:none;">Back</button>
+            <button class="primary" id="nextBtn" onclick="reframeNext()">Next</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="page" id="page-journal">
+    <section style="margin-top:44px;">
+      <div class="section-label">A private space</div>
+      <h2>Journal</h2>
+      <div class="journal-card">
+        <textarea id="journalInput" placeholder="Write whatever's on your mind — no structure needed."></textarea>
+        <div style="text-align:right; margin-top:12px;">
+          <button class="primary" onclick="saveJournalEntry()">Save entry</button>
+        </div>
+      </div>
+      <div id="journalEntries"></div>
+      <p style="font-size:12.5px; color:#8a9791; text-align:center; margin-top:8px;">Entries are saved only in this browser, on this device — nothing is sent anywhere.</p>
+    </section>
+  </div>
+
+  <div class="page" id="page-crisis">
+    <section style="margin-top:44px;">
+      <div class="section-label">If it's urgent</div>
+      <h2>Talk to someone right now</h2>
+
+      <div class="quiz-options" id="countrySelect" style="flex-direction:row; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
+
+      <div class="crisis-card">
+        <div id="crisisResources"></div>
+        <p class="crisis-note">The tools on this site are for a steadying moment — they're not a substitute for real support. If things feel like more than you can carry alone, reaching out to one of these is a strong, sensible move, not a last resort. Numbers are kept as accurate as possible but can change — if one doesn't connect, try the directory link below.</p>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h3>Don't see your country?</h3>
+        <p style="font-size:14.5px; color:#4a5a54; margin-bottom:10px;">Find A Helpline and the International Association for Suicide Prevention both maintain directories covering 100+ countries.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <a href="https://findahelpline.com" target="_blank" rel="noopener" class="ghost" style="text-decoration:none; display:inline-block;">findahelpline.com</a>
+          <a href="https://www.iasp.info/resources/Crisis_Centres/" target="_blank" rel="noopener" class="ghost" style="text-decoration:none; display:inline-block;">iasp.info crisis centres</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="page" id="page-chat">
+    <section style="margin-top:44px;">
+      <div class="section-label">Talk it through</div>
+      <h2>Chat</h2>
+      <div class="card" id="chatSetupNotice" style="margin-bottom:16px; display:none;">
+        <p style="font-size:14.5px; color:#4a5a54;">This isn't connected to a backend yet. Deploy the included Cloudflare Worker, then set <code>CHAT_ENDPOINT</code> near the bottom of this file's script to your Worker's URL.</p>
+      </div>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div id="chatMessages" style="max-height:420px; min-height:260px; overflow-y:auto; padding:22px; display:flex; flex-direction:column; gap:14px;"></div>
+        <div style="border-top:1px solid var(--line); padding:16px 18px; display:flex; gap:10px;">
+          <input id="chatInput" placeholder="Type a message..." style="flex:1; border:1px solid var(--line); background:var(--paper); border-radius:100px; padding:11px 18px; font-family:var(--font-body); font-size:15px; color:var(--ink);" onkeydown="if(event.key==='Enter'){sendChatMessage();}">
+          <button class="primary" onclick="sendChatMessage()">Send</button>
+        </div>
+      </div>
+      <p style="font-size:12.5px; color:#8a9791; text-align:center; margin-top:10px;">Not a crisis line and not a therapist — if things feel urgent, use the Talk now page instead.</p>
+    </section>
+  </div>
+
+
+  <footer>Haven doesn't store anything you type here. Close the tab any time.</footer>
+</div>
+
+<script>
+const topics = {
+  anxiety: {
+    tag: "Anxiety", title: "Anxiety", blurb: "Racing thoughts, dread, feeling on edge",
+    pills: ["Racing mind","Physical tension","Avoidance"],
+    feels: "A sense of dread or danger even when nothing's clearly wrong — racing thoughts, a tight chest, restlessness, trouble concentrating, or the urge to avoid things that used to feel fine.",
+    causes: ["Big life changes or uncertainty","Ongoing stress with no real break","Perfectionism or fear of judgment","Underlying health or sleep issues","Sometimes no clear trigger at all — that's normal too"],
+    help: [
+      ["Slow, controlled breathing","Long exhales signal safety to your nervous system — try the breathing tool."],
+      ["Naming the worry out loud or on paper","Vague dread feels bigger than a worry you've actually written down."],
+      ["Limiting reassurance-seeking","Checking symptoms or asking for reassurance repeatedly often makes anxiety worse, not better."],
+      ["Movement","Even a short walk metabolizes some of the stress hormones driving the feeling."]
+    ],
+    when: "If anxiety is showing up most days for weeks, stopping you from doing things you need to do, or coming with panic attacks, it's worth talking to a doctor or therapist — anxiety disorders are very treatable.",
+    starterThought: "Something bad is about to happen and I can't stop it.",
+    tool: "breathing"
+  },
+  depression: {
+    tag: "Low mood", title: "Depression & low mood", blurb: "Low energy, numbness, losing interest",
+    pills: ["Low energy","Numbness","Loss of interest"],
+    feels: "Persistent low mood, flat or numb rather than sad, low energy, trouble enjoying things you normally like, and sometimes changes in sleep or appetite.",
+    causes: ["Prolonged stress or burnout","Isolation or loss of routine","Grief or major loss","Biological or seasonal factors","Often a mix of things, not one single cause"],
+    help: [
+      ["Small, doable actions","Waiting to 'feel motivated' first rarely works — tiny actions (getting up, one text to a friend) often come before the motivation does."],
+      ["Keeping some structure","Even a loose daily rhythm — meals, a short walk, a set wake time — gives the day shape when everything feels flat."],
+      ["Staying connected","Depression tends to isolate you right when connection helps most — low-effort contact still counts."],
+      ["Sunlight and movement","Both have a real, measurable effect on mood regulation."]
+    ],
+    when: "If low mood has lasted more than two weeks, is affecting work, school, or relationships, or comes with thoughts of not wanting to be here, please talk to a professional — or use the crisis resources on this site.",
+    starterThought: "There's no point trying, nothing will change.",
+    tool: "reframe"
+  },
+  stress: {
+    tag: "Stress", title: "Stress & burnout", blurb: "Overwhelmed, stretched thin, can't switch off",
+    pills: ["Overload","Irritability","Can't switch off"],
+    feels: "Feeling stretched too thin, irritable, mentally foggy, or unable to switch off even when you get downtime. Often builds slowly until it feels sudden.",
+    causes: ["Too much on your plate for too long","Lack of control over your workload","Not enough recovery time between demands","Unclear expectations or constant context-switching"],
+    help: [
+      ["Real breaks, not just 'less work'","Recovery — actual rest — is what stress needs, not just fewer tasks."],
+      ["Saying no to some things","Protecting your time is one of the few direct levers you have."],
+      ["Breaking tasks down","A wall of obligations feels less overwhelming as a short, concrete list."],
+      ["Noticing your own limits early","Burnout is easier to interrupt at the 'stretched thin' stage than after it's set in."]
+    ],
+    when: "If stress has turned into exhaustion that rest doesn't fix, or you're dreading things you used to be fine with, that's a sign to scale back and get support — from a manager, doctor, or therapist.",
+    starterThought: "I have too much to do and no time to do it.",
+    tool: "breakdown"
+  },
+  sleep: {
+    tag: "Sleep", title: "Sleep & a restless mind", blurb: "Trouble sleeping or a tired mind that won't rest",
+    pills: ["Insomnia","Racing thoughts at night","Fatigue"],
+    feels: "Lying awake with a mind that won't quiet down, waking up in the night, or sleeping enough hours but still feeling exhausted.",
+    causes: ["Stress or anxiety spilling into the night","Irregular sleep schedule","Screens or stimulation close to bedtime","Caffeine or alcohol late in the day","Racing thoughts with no outlet during the day"],
+    help: [
+      ["A consistent wind-down","Same rough bedtime and a low-stimulation routine beforehand trains your body to expect sleep."],
+      ["Getting worries out of your head before bed","Writing tomorrow's to-do list or tonight's worries down can stop them looping."],
+      ["Limiting screens and caffeine late in the day","Both interfere with your body's natural signals to wind down."],
+      ["Getting up if you can't sleep","Lying awake frustrated trains your brain to associate bed with wakefulness — get up, do something calm, go back when tired."]
+    ],
+    when: "If poor sleep has lasted more than a few weeks and is affecting your day-to-day functioning, it's worth ruling out a sleep disorder or underlying cause with a doctor.",
+    starterThought: "If I don't fall asleep soon, tomorrow will be ruined.",
+    tool: "breathing"
+  },
+  grief: {
+    tag: "Grief", title: "Grief & big changes", blurb: "Loss, grief, or adjusting to something big",
+    pills: ["Loss","Adjustment","Waves of emotion"],
+    feels: "Waves of sadness, anger, guilt, or numbness that can come and go unpredictably — often alongside trying to function normally in daily life.",
+    causes: ["Death of someone close","End of a relationship","Loss of a job, role, or identity","Major life transitions — even good ones — can trigger grief-like feelings"],
+    help: [
+      ["Letting it come in waves","Grief isn't linear — a bad hour doesn't mean you're 'back at the start'."],
+      ["Talking about the person or thing you lost","Avoiding it rarely makes it easier; naming it usually does."],
+      ["Keeping a few small routines","An anchor point in the day when everything else feels upended."],
+      ["Giving yourself more time than you expect","There's no correct timeline for grief."]
+    ],
+    when: "If grief is completely stopping you from functioning months later, or you're worried about your safety, reach out to a grief counselor or the crisis resources here.",
+    starterThought: "I should be further along than I am by now.",
+    tool: "reframe"
+  },
+  relationships: {
+    tag: "Relationships", title: "Relationships & conflict", blurb: "Conflict or disconnect with someone close to you",
+    pills: ["Conflict","Communication","Disconnection"],
+    feels: "Tension, hurt, or distance in a relationship — recurring arguments, feeling unheard, or a slow drift apart.",
+    causes: ["Unspoken expectations","Poor communication under stress","Different conflict styles","Life pressures spilling into the relationship"],
+    help: [
+      ["Naming the actual need underneath the conflict","Most fights are really about an unmet need — being heard, respected, prioritized."],
+      ["Taking a pause when things get heated","A short break before continuing a hard conversation usually helps more than pushing through."],
+      ["Using 'I' statements","Describing your own experience lands better than accusations, even true ones."],
+      ["Getting outside support","Couples or family counseling isn't just for crises — it works well as prevention too."]
+    ],
+    when: "If a relationship involves fear, control, or any form of abuse, that's beyond what communication tips can fix — please reach out for support.",
+    starterThought: "They don't actually care about how I feel.",
+    tool: "reframe"
+  },
+  anger: {
+    tag: "Anger", title: "Anger & irritability", blurb: "Snapping easily, simmering frustration",
+    pills: ["Quick temper","Simmering tension","Regret after"],
+    feels: "Heat rising fast, a short fuse, snapping at people over small things, or a low simmer of irritation that colors everything. Often followed by guilt once it passes.",
+    causes: ["Feeling unheard or disrespected","Built-up stress with no outlet","Unmet needs — tired, hungry, overloaded","Old patterns from how anger was handled growing up"],
+    help: [
+      ["Naming it early","Catching 'irritated' before it becomes 'furious' gives you more room to choose what to do."],
+      ["Cooling down before responding","The physical spike of anger fades within a minute or two if you don't feed it — try the cooldown timer below."],
+      ["Finding the ask underneath the anger","Anger often points to a boundary or need — figuring out what it is helps more than venting alone."],
+      ["Moving the energy","A short burst of physical activity discharges the physiological arousal anger creates."]
+    ],
+    when: "If anger is leading to harming yourself, others, or property, or you feel out of control when it hits, that's worth addressing with a professional — anger has very treatable roots.",
+    starterThought: "They did that on purpose to disrespect me.",
+    tool: "cooldown"
+  },
+  panic: {
+    tag: "Panic", title: "Panic attacks", blurb: "Sudden fear, racing heart, feeling out of control",
+    pills: ["Sudden onset","Physical symptoms","Fear of it happening again"],
+    feels: "A sudden wave of intense fear — racing heart, shortness of breath, dizziness, chest tightness, or a feeling of unreality. Usually peaks within minutes even though it feels endless.",
+    causes: ["Built-up stress or anxiety reaching a peak","Specific triggers — crowds, enclosed spaces, reminders of past events","Sometimes no trigger at all, which can be scary but is common","Fear of having another one can itself become a trigger"],
+    help: [
+      ["Paced breathing","Slowing your exhale specifically helps interrupt the panic response — try the paced breathing tool below."],
+      ["Naming what's happening","Reminding yourself 'this is panic, it will peak and pass' reduces the fear of the fear itself."],
+      ["Grounding through your senses","Naming things you see, hear, and feel pulls attention out of the spiral."],
+      ["Not fighting it","Trying to force it to stop often makes it worse — riding it out tends to be faster."]
+    ],
+    when: "If panic attacks are frequent, or fear of having one is shrinking your life (avoiding places, canceling plans), a therapist can help — panic disorder responds very well to treatment.",
+    starterThought: "Something is seriously wrong with me right now.",
+    tool: "paced"
+  },
+  selfesteem: {
+    tag: "Self-esteem", title: "Self-esteem & self-criticism", blurb: "Harsh inner voice, feeling not good enough",
+    pills: ["Inner critic","Comparison","Perfectionism"],
+    feels: "A harsh inner voice, feeling like you're never quite enough, comparing yourself unfavorably to others, or brushing off compliments and successes.",
+    causes: ["Growing up with high or conditional expectations","Repeated criticism or comparison","Perfectionism as a coping strategy","Social comparison, especially online"],
+    help: [
+      ["Noticing the inner critic's voice","It often uses words you'd never say to a friend — noticing that gap is the first shift."],
+      ["Collecting evidence, not just impressions","Your harshest thoughts about yourself are opinions, not facts — try the strengths flip below."],
+      ["Separating your worth from your output","Struggling at something isn't the same as being worthless."],
+      ["Practicing receiving, not deflecting","Letting a compliment land instead of arguing with it, even if it feels awkward."]
+    ],
+    when: "If self-criticism is constant, severe, or comes with thoughts of self-harm, please talk to a professional or use the crisis resources on this site.",
+    starterThought: "Everyone else has this figured out except me.",
+    tool: "strengths"
+  },
+  social: {
+    tag: "Social anxiety", title: "Social anxiety", blurb: "Fear of judgment, dread before social situations",
+    pills: ["Fear of judgment","Overthinking after","Avoidance"],
+    feels: "Intense self-consciousness in social situations, dread beforehand, replaying conversations afterward looking for mistakes, or avoiding situations altogether.",
+    causes: ["Past embarrassing or humiliating experiences","High sensitivity to others' opinions","Uncertainty about social 'rules' in a situation","Comparing your inside nerves to everyone else's outside calm"],
+    help: [
+      ["Preparing a few go-to lines","Having a couple of questions or openers ready lowers the pressure of thinking on the spot — try the starter generator below."],
+      ["Shifting focus outward","Anxiety narrows focus onto yourself — deliberately noticing the room or the other person helps."],
+      ["Dropping the post-event replay","Reviewing every word for mistakes reinforces the anxiety — try to notice it and let it go."],
+      ["Starting small","Lower-stakes interactions build confidence for bigger ones."]
+    ],
+    when: "If social anxiety is limiting your relationships, work, or school significantly, therapy — especially CBT — has strong evidence for helping.",
+    starterThought: "Everyone can tell how awkward I'm being.",
+    tool: "script"
+  },
+  loneliness: {
+    tag: "Loneliness", title: "Loneliness & isolation", blurb: "Feeling disconnected, even around others",
+    pills: ["Disconnection","Low motivation to reach out","Feeling unseen"],
+    feels: "A sense of disconnection or being unseen — sometimes even while around other people. Can come with low motivation to reach out, which tends to deepen the isolation.",
+    causes: ["Life changes — moving, a breakup, graduating","Loss of a routine that used to include people","Depression or anxiety making connection feel harder","Quality of connection, not just quantity, being low"],
+    help: [
+      ["Low-effort contact still counts","A short message to one person is a real step, not a lesser one — try the reach-out prompt below."],
+      ["Rebuilding structure with people in it","A recurring plan (a class, a standing call) takes less energy than initiating each time from scratch."],
+      ["Being around people doing a shared activity","Side-by-side connection (a class, a game night) is often easier to start than one-on-one time."],
+      ["Being patient with the timeline","New connection usually takes longer to feel solid than we expect — that's normal, not a sign it's not working."]
+    ],
+    when: "If loneliness has been constant for a long time and nothing seems to shift it, a therapist can help — loneliness is very treatable, even though it doesn't always feel that way.",
+    starterThought: "No one would notice if I disappeared for a while.",
+    tool: "reachout"
+  },
+  focus: {
+    tag: "Focus", title: "Focus & procrastination", blurb: "Can't start, can't concentrate, task feels too big",
+    pills: ["Procrastination","Overwhelm","Trouble starting"],
+    feels: "Staring at a task without starting it, bouncing between distractions, or feeling like something is too big or vague to even know where to begin.",
+    causes: ["The task feeling bigger or vaguer than it needs to be","Perfectionism — not starting because it won't be 'right'","Underlying stress, anxiety, or low mood draining focus","Too many competing demands on attention"],
+    help: [
+      ["Shrinking the first step","'Write the report' is daunting; 'open the document' isn't — try the task breakdown tool below."],
+      ["A short timer instead of an open-ended block","Committing to just a few minutes lowers the barrier to starting."],
+      ["Removing friction, not willpower","Silencing notifications or closing tabs works better than trying to resist them."],
+      ["Treating starting as the whole win","Momentum tends to follow starting — you don't need to feel ready first."]
+    ],
+    when: "If trouble focusing is constant, long-standing, and affecting work, school, or daily life significantly, it's worth discussing with a doctor — it can have underlying causes worth checking.",
+    starterThought: "I'll never get this all done, so what's the point starting.",
+    tool: "breakdown"
+  },
+  medschool: {
+    tag: "Med school", title: "Med school", blurb: "Exam pressure, imposter syndrome, clinical weight",
+    pills: ["Exam pressure","Imposter syndrome","Compassion fatigue"],
+    feels: "A specific mix — relentless exam and board pressure, sleep deprivation that never fully resolves, the sense that everyone else has it more together than you do, and sometimes the emotional weight of a hard case, a difficult diagnosis, or your first patient death.",
+    causes: ["Volume and pace of material that never really lets up","Comparison — everyone around you is also high-achieving","Sleep disruption from studying or rotations","Carrying emotional weight from clinical experiences with nowhere to put it","A culture that can treat struggling as weakness rather than normal"],
+    help: [
+      ["Naming imposter syndrome for what it is","It's extremely common in medicine specifically — feeling behind doesn't mean you are behind. Try the evidence tool below."],
+      ["Protecting recovery time, not just study time","Burnout comes from too little recovery, not just too much work — try the focus timer below to build breaks in deliberately."],
+      ["Having somewhere to put the hard clinical moments","Debriefing a difficult case with a peer, mentor, or the check-in below matters more than pushing past it silently."],
+      ["Remembering struggling ≠ failing","Nearly everyone in medicine has a semester, rotation, or exam that shakes their confidence — it's part of the path, not a sign you don't belong."]
+    ],
+    when: "If exhaustion, low mood, or the emotional weight of clinical work is persistent and not lifting, most schools have confidential counseling for exactly this — using it isn't a black mark, it's what it's there for.",
+    starterThought: "Everyone else is handling this better than I am.",
+    tool: "medschool"
+  }
+};
+
+const topicOrder = ["anxiety","depression","stress","sleep","grief","relationships","anger","panic","selfesteem","social","loneliness","focus","medschool"];
+
+function renderTopicGrid(containerId){
+  const el = document.getElementById(containerId);
+  el.innerHTML = topicOrder.map(function(key){
+    const t = topics[key];
+    return '<button class="topic-tile" onclick="openTopic(\'' + key + '\')">' +
+      '<div class="tag">' + t.tag + '</div>' +
+      '<h3>' + t.title + '</h3>' +
+      '<p>' + t.blurb + '</p>' +
+    '</button>';
+  }).join('');
+}
+renderTopicGrid('homeTopicGrid');
+renderTopicGrid('libraryTopicGrid');
+
+let currentTopicKey = null;
+
+function openTopic(key){
+  currentTopicKey = key;
+  const t = topics[key];
+  document.getElementById('detailTag').textContent = t.tag;
+  document.getElementById('detailTitle').textContent = t.title;
+  document.getElementById('detailPills').innerHTML = t.pills.map(function(p){ return '<span class="pill">' + p + '</span>'; }).join('');
+  document.getElementById('detailFeels').textContent = t.feels;
+  document.getElementById('detailCauses').innerHTML = t.causes.map(function(c){ return '<li>' + c + '</li>'; }).join('');
+  document.getElementById('detailHelp').innerHTML = t.help.map(function(h){ return '<div class="help-box"><h4>' + h[0] + '</h4><p>' + h[1] + '</p></div>'; }).join('');
+  document.getElementById('detailWhen').textContent = t.when;
+  renderDetailTool(t);
+  goTo('detail');
+}
+
+function goToReframeWithStarter(){
+  if(currentTopicKey){
+    const t = topics[currentTopicKey];
+    document.getElementById('r1').value = t.starterThought;
+  }
+  resetReframeToStep1Only();
+  goTo('tools');
+  document.querySelector('.card h3').scrollIntoView;
+}
+
+function resetReframeToStep1Only(){
+  document.querySelectorAll('.reframe-step-inner').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelector('.reframe-step-inner[data-step="1"]').classList.add('active');
+  rStep = 1;
+  updateDots();
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('nextBtn').textContent = 'Next';
+  document.getElementById('nextBtn').onclick = reframeNext;
+}
+
+/* ---- Per-topic tools ---- */
+function renderDetailTool(t){
+  const box = document.getElementById('detailTool');
+  const key = t.tool;
+  if(key === 'breathing'){
+    box.innerHTML =
+      '<h3>Slow your breathing</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:14px;">A few rounds of slow breathing can take the edge off before anything else helps.</p>' +
+      '<button class="primary" onclick="goTo(\'tools\')">Open the breathing tool</button>';
+  } else if(key === 'reframe'){
+    box.innerHTML =
+      '<h3>Reframe this thought</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:14px;">Start from a common version of this thought and work through it step by step.</p>' +
+      '<button class="primary" onclick="goToReframeWithStarter()">Start reframing</button>';
+  } else if(key === 'cooldown'){
+    box.innerHTML =
+      '<h3>60-second cooldown</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:14px;">The physical spike of anger fades fast if you don\u2019t feed it. Just watch this run down.</p>' +
+      '<div id="cooldownDisplay" style="font-family:var(--font-display);font-size:40px;color:var(--moss-dark);text-align:center;margin:10px 0;">60</div>' +
+      '<div style="text-align:center;"><button class="primary" id="cooldownBtn" onclick="startCooldown()">Start cooldown</button></div>';
+  } else if(key === 'paced'){
+    box.innerHTML =
+      '<h3>Paced breathing (4-7-8)</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:14px;">Inhale 4, hold 7, exhale 8. This ratio specifically helps interrupt a panic spiral.</p>' +
+      '<div class="breathe-word" id="pacedWord" style="text-align:center;">Ready</div>' +
+      '<div style="text-align:center;"><button class="primary" id="pacedBtn" onclick="togglePaced()">Begin</button></div>';
+  } else if(key === 'strengths'){
+    box.innerHTML =
+      '<h3>Strengths flip</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:14px;">Write one harsh thought about yourself, then one true, kinder counterpoint.</p>' +
+      '<textarea id="strengthCritic" placeholder="What the inner critic says..." style="width:100%;min-height:60px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:var(--font-body);font-size:14.5px;margin-bottom:10px;"></textarea>' +
+      '<textarea id="strengthCounter" placeholder="A kinder, truer counterpoint..." style="width:100%;min-height:60px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:var(--font-body);font-size:14.5px;"></textarea>';
+  } else if(key === 'script'){
+    box.innerHTML =
+      '<h3>Conversation starter</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:14px;">Tap for a low-pressure opener you can use in your next social moment.</p>' +
+      '<div id="scriptOutput" style="background:var(--paper);border-radius:12px;padding:14px;font-family:var(--font-display);font-style:italic;color:var(--moss-dark);margin-bottom:12px;min-height:20px;">Tap below to get one</div>' +
+      '<button class="primary" onclick="generateScript()">Give me a line</button>';
+  } else if(key === 'reachout'){
+    box.innerHTML =
+      '<h3>Reach-out prompt</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:14px;">A low-effort message you could send to one person today.</p>' +
+      '<div id="reachoutOutput" style="background:var(--paper);border-radius:12px;padding:14px;font-family:var(--font-display);font-style:italic;color:var(--moss-dark);margin-bottom:12px;min-height:20px;">Tap below to get one</div>' +
+      '<button class="primary" onclick="generateReachout()">Give me a message</button>';
+  } else if(key === 'breakdown'){
+    box.innerHTML =
+      '<h3>Task breakdown</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:14px;">Name the task that feels too big — get back a tiny first step.</p>' +
+      '<input id="breakdownInput" placeholder="e.g. finish the report" style="width:100%;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:var(--font-body);font-size:14.5px;margin-bottom:10px;">' +
+      '<div id="breakdownOutput" style="background:var(--sand);border-radius:12px;padding:14px;font-size:14px;display:none;"></div>' +
+      '<button class="primary" style="margin-top:10px;" onclick="generateBreakdown()">Break it down</button>';
+  } else if(key === 'medschool'){
+    box.innerHTML =
+      '<h3>Study focus timer</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:12px;">25 minutes of focus, then a real 5-minute break — the break isn\u2019t optional, it\u2019s part of how this works.</p>' +
+      '<div id="pomoDisplay" style="font-family:var(--font-display);font-size:36px;color:var(--moss-dark);text-align:center;margin:6px 0;">25:00</div>' +
+      '<div id="pomoLabel" style="text-align:center;font-size:13px;color:#7a8a83;margin-bottom:12px;">Focus round</div>' +
+      '<div style="text-align:center;">' +
+        '<button class="primary" id="pomoBtn" onclick="togglePomo()">Start</button> ' +
+        '<button class="ghost" onclick="resetPomo()">Reset</button>' +
+      '</div>' +
+      '<div style="border-top:1px solid var(--line);margin:22px 0;"></div>' +
+      '<h3>Imposter syndrome — the evidence</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:12px;">Write the "I don\u2019t belong here" thought, then list actual evidence against it — grades, feedback, a moment with a patient, anything real.</p>' +
+      '<textarea id="imposterThought" placeholder="The thought (e.g. everyone else gets this faster than I do)..." style="width:100%;min-height:56px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:var(--font-body);font-size:15px;margin-bottom:10px;"></textarea>' +
+      '<textarea id="imposterEvidence" placeholder="Evidence against it..." style="width:100%;min-height:70px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:var(--font-body);font-size:15px;"></textarea>' +
+      '<div style="border-top:1px solid var(--line);margin:22px 0;"></div>' +
+      '<h3>Compassion fatigue check-in</h3>' +
+      '<p style="font-size:14px;color:#5a6b64;margin-bottom:12px;">Not a diagnosis — just a moment to notice. Tap what\u2019s felt true lately.</p>' +
+      '<div id="cfOptions"></div>' +
+      '<div id="cfResult" style="margin-top:12px;font-size:14px;color:#4a5a54;"></div>';
+    renderCompassionFatigueOptions();
+    initPomo();
+  }
+}
+
+const cfStatements = [
+  "Feeling numb or detached during patient interactions",
+  "Dreading clinical time you used to feel okay about",
+  "Trouble leaving a hard case behind at the end of the day",
+  "Feeling like you have less to give than you used to",
+  "Irritability or exhaustion that rest isn't touching"
+];
+let cfSelected = [];
+function renderCompassionFatigueOptions(){
+  cfSelected = [];
+  const el = document.getElementById('cfOptions');
+  if(!el) return;
+  el.innerHTML = cfStatements.map(function(s, i){
+    return '<button class="quiz-opt" style="width:100%;text-align:left;margin-bottom:6px;" data-cf="' + i + '" onclick="toggleCf(' + i + ', this)">' + s + '</button>';
+  }).join('');
+  document.getElementById('cfResult').textContent = '';
+}
+function toggleCf(i, btn){
+  const idx = cfSelected.indexOf(i);
+  if(idx === -1){ cfSelected.push(i); btn.classList.add('selected'); }
+  else { cfSelected.splice(idx,1); btn.classList.remove('selected'); }
+  const resultEl = document.getElementById('cfResult');
+  if(cfSelected.length === 0){
+    resultEl.textContent = '';
+  } else if(cfSelected.length <= 2){
+    resultEl.textContent = "Worth keeping an eye on — a short debrief with a peer or mentor after hard days can help before it builds up.";
+  } else {
+    resultEl.textContent = "That's a few things resonating at once — this is a good moment to talk to your school's counseling service or a trusted mentor. Compassion fatigue is common and treatable, not a personal failing.";
+  }
+}
+
+let pomoInterval = null;
+let pomoSeconds = 25 * 60;
+let pomoOnBreak = false;
+function initPomo(){
+  pomoSeconds = 25 * 60;
+  pomoOnBreak = false;
+  updatePomoDisplay();
+}
+function updatePomoDisplay(){
+  const display = document.getElementById('pomoDisplay');
+  const label = document.getElementById('pomoLabel');
+  if(!display) return;
+  const m = Math.floor(pomoSeconds / 60);
+  const s = pomoSeconds % 60;
+  display.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  if(label) label.textContent = pomoOnBreak ? 'Break — step away from the desk' : 'Focus round';
+}
+function togglePomo(){
+  const btn = document.getElementById('pomoBtn');
+  if(pomoInterval){
+    clearInterval(pomoInterval);
+    pomoInterval = null;
+    if(btn) btn.textContent = 'Resume';
+    return;
+  }
+  if(btn) btn.textContent = 'Pause';
+  pomoInterval = setInterval(function(){
+    pomoSeconds--;
+    if(pomoSeconds <= 0){
+      pomoOnBreak = !pomoOnBreak;
+      pomoSeconds = pomoOnBreak ? 5 * 60 : 25 * 60;
+    }
+    updatePomoDisplay();
+  }, 1000);
+}
+function resetPomo(){
+  clearInterval(pomoInterval);
+  pomoInterval = null;
+  const btn = document.getElementById('pomoBtn');
+  if(btn) btn.textContent = 'Start';
+  initPomo();
+}
+
+let cooldownInterval = null;
+function startCooldown(){
+  if(cooldownInterval) return;
+  let n = 60;
+  const display = document.getElementById('cooldownDisplay');
+  const btn = document.getElementById('cooldownBtn');
+  btn.disabled = true;
+  cooldownInterval = setInterval(function(){
+    n--;
+    if(display) display.textContent = n;
+    if(n <= 0){
+      clearInterval(cooldownInterval);
+      cooldownInterval = null;
+      if(display) display.textContent = 'Done';
+      if(btn){ btn.disabled = false; btn.textContent = 'Run it again'; }
+    }
+  }, 1000);
+}
+
+let pacedActive = false;
+let pacedTimeout = null;
+function togglePaced(){
+  pacedActive = !pacedActive;
+  const word = document.getElementById('pacedWord');
+  const btn = document.getElementById('pacedBtn');
+  if(pacedActive){
+    btn.textContent = 'Stop';
+    pacedCycle();
+  } else {
+    btn.textContent = 'Begin';
+    clearTimeout(pacedTimeout);
+    if(word) word.textContent = 'Ready';
+  }
+}
+function pacedCycle(){
+  if(!pacedActive) return;
+  const word = document.getElementById('pacedWord');
+  if(word) word.textContent = 'Inhale — 4';
+  pacedTimeout = setTimeout(function(){
+    if(!pacedActive) return;
+    if(word) word.textContent = 'Hold — 7';
+    pacedTimeout = setTimeout(function(){
+      if(!pacedActive) return;
+      if(word) word.textContent = 'Exhale — 8';
+      pacedTimeout = setTimeout(pacedCycle, 8000);
+    }, 7000);
+  }, 4000);
+}
+
+const scriptLines = [
+  "How do you know [host/person] — what's the story there?",
+  "What's been the best part of your week so far?",
+  "I'm bad at small talk, so I'll just ask — what are you into these days?",
+  "This is a nice spot. Have you been here before?",
+  "What's something you've been looking forward to lately?"
+];
+function generateScript(){
+  const el = document.getElementById('scriptOutput');
+  el.textContent = scriptLines[Math.floor(Math.random()*scriptLines.length)];
+}
+
+const reachoutLines = [
+  "Hey, this made me think of you. How are you doing?",
+  "It's been a while — want to catch up sometime this week?",
+  "No big update, just wanted to say hi and see how you're doing.",
+  "I don't need a long reply, just wanted to check in on you.",
+  "Random thought — what have you been up to lately?"
+];
+function generateReachout(){
+  const el = document.getElementById('reachoutOutput');
+  el.textContent = reachoutLines[Math.floor(Math.random()*reachoutLines.length)];
+}
+
+function generateBreakdown(){
+  const input = document.getElementById('breakdownInput').value.trim();
+  const out = document.getElementById('breakdownOutput');
+  const task = input || 'this task';
+  out.style.display = 'block';
+  out.innerHTML =
+    '<strong style="color:var(--moss-dark);">First step (2 minutes or less):</strong><br>Open whatever "' + escapeHtml(task) + '" needs and just look at it — no pressure to do more yet.<br><br>' +
+    '<strong style="color:var(--moss-dark);">Then:</strong><br>Set a timer for 10 minutes and work on "' + escapeHtml(task) + '" until it rings. Stop or continue — your choice.';
+}
+
+function goTo(page){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.topnav button').forEach(function(b){
+    b.classList.toggle('active', b.dataset.page === page);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+const quizAnswers = { '0': [] };
+let quizStep = 0;
+const quizTotal = 3;
+
+function initQuizProgress(){
+  document.getElementById('quizProgress').innerHTML =
+    Array.from({length:quizTotal}).map(function(){ return '<div class="bar"><span></span></div>'; }).join('');
+}
+initQuizProgress();
+
+document.querySelectorAll('.quiz-opt').forEach(function(btn){
+  const optionsEl = btn.parentElement;
+  const isMulti = optionsEl.dataset.multi === 'true';
+
+  btn.addEventListener('click', function(){
+    const group = optionsEl.dataset.group;
+
+    if(isMulti){
+      this.classList.toggle('selected');
+      const val = this.dataset.val;
+      const arr = quizAnswers[group];
+      const idx = arr.indexOf(val);
+      if(idx === -1) arr.push(val); else arr.splice(idx, 1);
+      const continueBtn = document.getElementById('quizStep0Continue');
+      if(continueBtn) continueBtn.disabled = arr.length === 0;
+    } else {
+      document.querySelectorAll('.quiz-options[data-group="' + group + '"] .quiz-opt').forEach(function(b){ b.classList.remove('selected'); });
+      this.classList.add('selected');
+      quizAnswers[group] = this.dataset.val;
+      setTimeout(function(){ advanceQuiz(); }, 300);
+    }
+  });
+});
+
+function updateQuizProgress(){
+  document.querySelectorAll('#quizProgress .bar span').forEach(function(s,i){
+    s.style.width = i < quizStep ? '100%' : (i === quizStep ? '50%' : '0%');
+  });
+}
+updateQuizProgress();
+
+function advanceQuiz(){
+  if(quizStep < quizTotal - 1){
+    document.querySelector('.quiz-step[data-q="' + quizStep + '"]').classList.remove('active');
+    quizStep++;
+    document.querySelector('.quiz-step[data-q="' + quizStep + '"]').classList.add('active');
+    updateQuizProgress();
+  } else {
+    quizStep++;
+    updateQuizProgress();
+    showQuizResult();
+  }
+}
+
+function showQuizResult(){
+  const topicKeys = quizAnswers['0'];
+  const duration = quizAnswers['1'];
+  const need = quizAnswers['2'];
+
+  // If things feel unsafe or like too much right now, skip straight to crisis resources.
+  if(need === 'unsafe'){
+    restartQuiz();
+    goTo('crisis');
+    return;
+  }
+
+  document.getElementById('quizSteps').style.display = 'none';
+  const resultBox = document.getElementById('quizResult');
+  resultBox.classList.add('active');
+
+  const topicTitles = topicKeys.map(function(k){ return topics[k].title.toLowerCase(); });
+
+  let headline;
+  if(topicTitles.length === 1){
+    headline = 'This sounds like it might be about ' + topicTitles[0];
+  } else if(topicTitles.length === 2){
+    headline = 'This sounds like a mix of ' + topicTitles[0] + ' and ' + topicTitles[1];
+  } else {
+    const last = topicTitles[topicTitles.length - 1];
+    headline = 'This sounds like a mix of ' + topicTitles.slice(0, -1).join(', ') + ', and ' + last;
+  }
+  document.getElementById('resultHeadline').textContent = headline;
+
+  let subtext = '';
+  if(topicTitles.length > 1){
+    subtext = "It's common for a few things to show up together and feed into each other. ";
+  }
+  if(duration === 'today') subtext += "Since this is pretty recent, here's something to try right now.";
+  else if(duration === 'weeks') subtext += "A few weeks in is a good time to understand what's going on and try a couple of concrete things.";
+  else subtext += "Since this has been going on a while, it's worth trying these alongside seriously considering outside support.";
+  document.getElementById('resultSub').textContent = subtext;
+
+  // Show the actual "what can help" content inline, right away, for each selected topic —
+  // not just links to click through to.
+  const solutionBox = document.getElementById('resultSolution');
+  solutionBox.innerHTML = topicKeys.map(function(key){
+    const t = topics[key];
+    const helpBits = t.help.slice(0, 3).map(function(h){
+      return '<div class="help-box"><h4>' + h[0] + '</h4><p>' + h[1] + '</p></div>';
+    }).join('');
+    return '<div style="margin-bottom:20px;">' +
+      '<h3 style="font-size:18px;">' + t.title + '</h3>' +
+      helpBits +
+    '</div>';
+  }).join('');
+
+  let items = [];
+
+  // One "full topic page" entry per selected topic
+  topicKeys.forEach(function(key){
+    items.push({
+      label: 'See the full ' + topics[key].title.toLowerCase() + ' page',
+      action: function(){ openTopic(key); }
+    });
+  });
+
+  // General tool suggestion(s) based on what's needed right now
+  if(need === 'calm'){
+    items.unshift({label:'Try the breathing or grounding tool', action:function(){ goTo('tools'); }});
+  } else if(need === 'plan'){
+    items.push({label:'Try the thought reframe tool', action:function(){ goTo('tools'); }});
+  }
+
+  if(duration === 'months'){
+    items.push({label:'See who to talk to if this continues', action:function(){ openTopic(topicKeys[0]); }});
+  }
+
+  document.getElementById('resultItems').innerHTML = items.map(function(it,i){
+    return '<div class="result-item" data-idx="' + i + '"><span>' + it.label + '</span><span class="arrow">→</span></div>';
+  }).join('');
+
+  document.querySelectorAll('#resultItems .result-item').forEach(function(el,i){
+    el.addEventListener('click', function(){ items[i].action(); });
+  });
+}
+
+function restartQuiz(){
+  quizAnswers['0'] = []; quizAnswers['1'] = undefined; quizAnswers['2'] = undefined;
+  const continueBtn = document.getElementById('quizStep0Continue');
+  if(continueBtn) continueBtn.disabled = true;
+  document.querySelectorAll('.quiz-opt').forEach(function(b){ b.classList.remove('selected'); });
+  document.querySelectorAll('.quiz-step').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelector('.quiz-step[data-q="0"]').classList.add('active');
+  quizStep = 0;
+  updateQuizProgress();
+  document.getElementById('quizResult').classList.remove('active');
+  document.getElementById('quizSteps').style.display = 'block';
+}
+
+const JOURNAL_KEY = 'haven_journal_entries';
+
+function loadJournalEntries(){
+  try{
+    const raw = localStorage.getItem(JOURNAL_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e){
+    return [];
+  }
+}
+
+function saveJournalEntries(entries){
+  try{
+    localStorage.setItem(JOURNAL_KEY, JSON.stringify(entries));
+  } catch(e){ /* storage unavailable, fail silently */ }
+}
+
+function saveJournalEntry(){
+  const input = document.getElementById('journalInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const entries = loadJournalEntries();
+  entries.unshift({ text: text, date: new Date().toISOString() });
+  saveJournalEntries(entries);
+  input.value = '';
+  renderJournalEntries();
+}
+
+function deleteJournalEntry(idx){
+  const entries = loadJournalEntries();
+  entries.splice(idx, 1);
+  saveJournalEntries(entries);
+  renderJournalEntries();
+}
+
+function formatJournalDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }) +
+    ' · ' + d.toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' });
+}
+
+function renderJournalEntries(){
+  const entries = loadJournalEntries();
+  const el = document.getElementById('journalEntries');
+  if(entries.length === 0){
+    el.innerHTML = '<div class="journal-empty">No entries yet — your first one will show up here.</div>';
+    return;
+  }
+  el.innerHTML = entries.map(function(e, i){
+    return '<div class="journal-entry">' +
+      '<div class="journal-entry-date">' + formatJournalDate(e.date) + '</div>' +
+      '<div class="journal-entry-text">' + escapeHtml(e.text) + '</div>' +
+      '<button class="journal-entry-delete" onclick="deleteJournalEntry(' + i + ')">Delete</button>' +
+    '</div>';
+  }).join('');
+}
+
+renderJournalEntries();
+
+/* ---------------- Chat (Gemini via your own Cloudflare Worker) ---------------- */
+// Set this to your deployed Worker's URL, e.g. "https://haven-chat.yourname.workers.dev"
+const CHAT_ENDPOINT = "https://haven-chat.jonathan07dcosta.workers.dev";
+
+const CRISIS_WORDS = ["suicide","kill myself","end my life","want to die","hurt myself","self harm","self-harm"];
+let chatHistory = [];
+
+function appendChatBubble(text, role){
+  const wrap = document.getElementById('chatMessages');
+  const bubble = document.createElement('div');
+  const isUser = role === 'user';
+  bubble.style.maxWidth = '80%';
+  bubble.style.padding = '12px 16px';
+  bubble.style.borderRadius = '16px';
+  bubble.style.fontSize = '15px';
+  bubble.style.lineHeight = '1.5';
+  bubble.style.whiteSpace = 'pre-wrap';
+  bubble.style.alignSelf = isUser ? 'flex-end' : 'flex-start';
+  bubble.style.background = isUser ? 'var(--moss-dark)' : 'var(--paper)';
+  bubble.style.color = isUser ? 'var(--white)' : 'var(--ink)';
+  bubble.textContent = text;
+  wrap.appendChild(bubble);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+async function sendChatMessage(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+
+  if(!CHAT_ENDPOINT){
+    document.getElementById('chatSetupNotice').style.display = 'block';
+    return;
+  }
+
+  input.value = '';
+  appendChatBubble(text, 'user');
+
+  const lower = text.toLowerCase();
+  if(CRISIS_WORDS.some(function(w){ return lower.indexOf(w) !== -1; })){
+    appendChatBubble("It sounds like things feel really heavy right now. Please use the \"Talk now\" page — it has crisis lines for wherever you are, and reaching out there right now is the best next step.", 'model');
+    return;
+  }
+
+  appendChatBubble('…', 'model');
+  const wrap = document.getElementById('chatMessages');
+  const placeholder = wrap.lastChild;
+
+  try{
+    const res = await fetch(CHAT_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, history: chatHistory })
+    });
+    const data = await res.json();
+    placeholder.remove();
+    const reply = data.reply || "Sorry, something went wrong reaching the assistant.";
+    appendChatBubble(reply, 'model');
+    chatHistory.push({ role: 'user', text: text });
+    chatHistory.push({ role: 'model', text: reply });
+  } catch(e){
+    placeholder.remove();
+    appendChatBubble("Couldn't reach the chat backend — check the CHAT_ENDPOINT setting.", 'model');
+  }
+}
+
+if(!CHAT_ENDPOINT){
+  const notice = document.getElementById('chatSetupNotice');
+  if(notice) notice.style.display = 'block';
+}
+
+const crisisData = {
+  in: { label: "India", rows: [
+    ["KIRAN Mental Health Helpline", "Govt. of India — 24/7, multiple languages", "1800-599-0019"],
+    ["Tele MANAS", "Govt. of India — 24/7 tele-mental health", "14416"],
+    ["Vandrevala Foundation", "24/7 phone, WhatsApp & chat", "1860-266-2345"],
+    ["Emergency services", "Police / ambulance, if danger is immediate", "112"]
+  ]},
+  us: { label: "United States", rows: [
+    ["988 Suicide & Crisis Lifeline", "Call or text — 24/7", "988"],
+    ["Crisis Text Line", "Text from anywhere in the US", "Text HOME to 741741"],
+    ["Emergency services", "If life is in immediate danger", "911"]
+  ]},
+  uk: { label: "UK & Ireland", rows: [
+    ["Samaritans", "Call or email — 24/7, UK & Ireland", "116 123"],
+    ["Emergency services", "If life is in immediate danger", "999 (UK) / 112 (Ireland)"]
+  ]},
+  ca: { label: "Canada", rows: [
+    ["Talk Suicide Canada", "Call — 24/7", "1-833-456-4566"],
+    ["Talk Suicide Canada", "Text, 4pm–midnight ET", "45645"],
+    ["Emergency services", "If life is in immediate danger", "911"]
+  ]},
+  au: { label: "Australia", rows: [
+    ["Lifeline Australia", "Call or text — 24/7", "13 11 14"],
+    ["Lifeline text", "SMS", "0477 13 11 14"],
+    ["Emergency services", "If life is in immediate danger", "000"]
+  ]},
+  intl: { label: "Elsewhere", rows: [
+    ["Find A Helpline", "Directory covering 175+ countries", "findahelpline.com"],
+    ["IASP Crisis Centres", "International Association for Suicide Prevention directory", "iasp.info/resources"],
+    ["Emergency services", "If life is in immediate danger", "your local emergency number"]
+  ]}
+};
+const countryOrder = ["in","us","uk","ca","au","intl"];
+let selectedCountry = "in";
+
+function renderCountrySelect(){
+  const el = document.getElementById('countrySelect');
+  el.innerHTML = countryOrder.map(function(k){
+    const active = k === selectedCountry ? ' selected' : '';
+    return '<button class="quiz-opt' + active + '" style="padding:9px 16px;" onclick="selectCountry(\'' + k + '\')">' + crisisData[k].label + '</button>';
+  }).join('');
+}
+
+function selectCountry(k){
+  selectedCountry = k;
+  renderCountrySelect();
+  renderCrisisResources();
+}
+
+function renderCrisisResources(){
+  const d = crisisData[selectedCountry];
+  document.getElementById('crisisResources').innerHTML = d.rows.map(function(r){
+    return '<div class="resource-row"><div class="resource-name">' + r[0] + '<span>' + r[1] + '</span></div><div class="resource-contact">' + r[2] + '</div></div>';
+  }).join('');
+}
+
+renderCountrySelect();
+renderCrisisResources();
+
+let breathing = false;
+let breatheTimeout;
+const circle = document.getElementById('breatheCircle');
+const word = document.getElementById('breatheWord');
+const sub = document.getElementById('breatheSub');
+const btn = document.getElementById('breatheBtn');
+
+function breatheCycle(){
+  if(!breathing) return;
+  word.textContent = 'Breathe in';
+  sub.textContent = 'through your nose, slowly';
+  circle.style.transition = 'transform 4s ease-in-out';
+  circle.style.transform = 'scale(1.8)';
+  breatheTimeout = setTimeout(function(){
+    if(!breathing) return;
+    word.textContent = 'Hold';
+    sub.textContent = 'just stay here a moment';
+    breatheTimeout = setTimeout(function(){
+      if(!breathing) return;
+      word.textContent = 'Breathe out';
+      sub.textContent = 'slow and long, through your mouth';
+      circle.style.transition = 'transform 6s ease-in-out';
+      circle.style.transform = 'scale(1)';
+      breatheTimeout = setTimeout(breatheCycle, 6000);
+    }, 4000);
+  }, 4000);
+}
+
+function toggleBreathing(){
+  breathing = !breathing;
+  if(breathing){
+    btn.textContent = 'Stop';
+    breatheCycle();
+  } else {
+    btn.textContent = 'Begin';
+    clearTimeout(breatheTimeout);
+    circle.style.transition = 'transform 1s ease';
+    circle.style.transform = 'scale(1)';
+    word.textContent = 'Ready when you are';
+    sub.textContent = '4 in · 4 hold · 6 out';
+  }
+}
+
+let rStep = 1;
+const rTotal = 5;
+
+function updateDots(){
+  document.querySelectorAll('.dot').forEach(function(d){
+    d.classList.toggle('done', parseInt(d.dataset.dot) <= rStep);
+  });
+}
+
+function reframeNext(){
+  if(rStep === rTotal) return;
+  if(rStep === rTotal - 1){
+    const summary = document.getElementById('reframeSummary');
+    const v1 = document.getElementById('r1').value || '(not answered)';
+    const v3 = document.getElementById('r3').value || '(not answered)';
+    const v4 = document.getElementById('r4').value || '(not answered)';
+    summary.innerHTML =
+      '<strong>The original thought</strong>' + escapeHtml(v1) +
+      '<strong>What you would tell a friend</strong>' + escapeHtml(v3) +
+      '<strong>Your more balanced version</strong>' + escapeHtml(v4);
+  }
+  document.querySelector('.reframe-step-inner[data-step="' + rStep + '"]').classList.remove('active');
+  rStep++;
+  document.querySelector('.reframe-step-inner[data-step="' + rStep + '"]').classList.add('active');
+  updateDots();
+  document.getElementById('backBtn').style.display = rStep > 1 ? 'inline-block' : 'none';
+  document.getElementById('nextBtn').textContent = rStep === rTotal ? 'Done' : (rStep === rTotal - 1 ? 'See it together' : 'Next');
+  if(rStep === rTotal){
+    document.getElementById('nextBtn').onclick = resetReframe;
+  }
+}
+
+function reframeBack(){
+  if(rStep === 1) return;
+  document.querySelector('.reframe-step-inner[data-step="' + rStep + '"]').classList.remove('active');
+  rStep--;
+  document.querySelector('.reframe-step-inner[data-step="' + rStep + '"]').classList.add('active');
+  updateDots();
+  document.getElementById('backBtn').style.display = rStep > 1 ? 'inline-block' : 'none';
+  document.getElementById('nextBtn').textContent = 'Next';
+}
+
+function resetReframe(){
+  document.querySelector('.reframe-step-inner[data-step="' + rStep + '"]').classList.remove('active');
+  rStep = 1;
+  document.querySelector('.reframe-step-inner[data-step="1"]').classList.add('active');
+  ['r1','r2','r3','r4'].forEach(function(id){ document.getElementById(id).value=''; });
+  updateDots();
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('nextBtn').textContent = 'Next';
+  document.getElementById('nextBtn').onclick = reframeNext;
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+updateDots();
+</script>
+</body>
+</html>
     --white: #FCFBF7;
     --font-display: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
